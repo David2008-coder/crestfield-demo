@@ -1,0 +1,313 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="theme-color" content="#0f5d2f" />
+<title>Crestfield Cleaning | Book a Cleaner in Lagos &amp; Abuja</title>
+<meta name="description" content="Professional, reliable, trusted cleaning service in Lagos & Abuja. Book in 60 seconds and pay a deposit online." />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,500;9..144,600;9..144,700&display=swap" rel="stylesheet" />
+</head>
+<body>
+<div id="root"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.9/babel.min.js"></script>
+<script type="text/babel" data-presets="react">
+const { useState, useRef } = React;
+
+/* ---------- CONFIG (edit these) ---------- */
+const PHONE_DISPLAY = "+234 915 981 4420";
+const PHONE_LINK = "+2349159814420";
+const WHATSAPP = "2349159814420";
+const EMAIL = "hello@crestfieldcleaning.com"; // TODO: replace with your real email
+const INSTAGRAM = "Crestfieldcleaning";
+
+const SERVICES = [
+  { id: "2br", name: "2-Bedroom Apartment", price: "₦25,000", meta: "2 cleaners · 3 hours" },
+  { id: "3br", name: "3-Bedroom Apartment", price: "₦35,000", meta: "3 cleaners · 4 hours", popular: true },
+  { id: "office", name: "Office Cleaning", price: "₦50,000", meta: "Full team" },
+  { id: "post", name: "Post-Construction", price: "₦70,000", meta: "Deep clean" },
+];
+
+const STEPS = [
+  ["Choose service", "Pick the clean that fits your space."],
+  ["Pick date & time", "Select a slot that works for you."],
+  ["Pay ₦5k deposit", "Secure your slot with Paystack."],
+  ["We confirm on WhatsApp", "Your team and arrival time, confirmed."],
+];
+
+const CSS = `
+:root{--green:#0f5d2f;--green-d:#0a4322;--green-l:#e3efe7;--cream:#faf6ec;--white:#fff;--ink:#17261d;--muted:#5f6f65;--line:#e6e0cf;
+--shadow:0 10px 30px -12px rgba(15,93,47,.22);--r:22px}
+*{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;scroll-padding-top:76px}
+body{font-family:'DM Sans',system-ui,sans-serif;background:var(--cream);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
+h1,h2,h3,.logo{font-family:'Fraunces',Georgia,serif;letter-spacing:-.01em;line-height:1.15}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+section{padding:64px 0}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border:0;cursor:pointer;font:600 1rem 'DM Sans',sans-serif;padding:14px 26px;border-radius:999px;text-decoration:none;transition:transform .15s,background .15s,box-shadow .15s}
+.btn:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #7fc79a;outline-offset:2px}
+.btn-primary{background:var(--green);color:#fff;box-shadow:var(--shadow)}
+.btn-primary:hover{background:var(--green-d);transform:translateY(-1px)}
+.btn-ghost{background:#fff;color:var(--green);border:1.5px solid var(--green)}
+.btn-ghost:hover{background:var(--green-l)}
+.btn-sm{padding:10px 20px;font-size:.92rem}
+
+/* header */
+.hdr{position:sticky;top:0;z-index:20;background:rgba(250,246,236,.92);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.hdr .wrap{display:flex;align-items:center;justify-content:space-between;height:68px;gap:12px}
+.logo{display:flex;align-items:center;gap:10px;font-size:1.3rem;font-weight:700;color:var(--green);text-decoration:none}
+.logo i{width:32px;height:32px;border-radius:10px;background:var(--green);color:#fff;display:grid;place-items:center;font:700 1rem 'Fraunces',serif;font-style:normal}
+.hdr-r{display:flex;align-items:center;gap:16px}
+.phone{color:var(--green);font-weight:600;text-decoration:none;display:none}
+
+/* hero */
+.hero{padding:56px 0 48px}
+.hero .wrap{text-align:center;max-width:820px}
+.hero h1{font-size:clamp(2.2rem,7vw,3.9rem);font-weight:600;color:var(--green)}
+.hero p{margin:18px auto 28px;font-size:1.1rem;color:var(--muted);max-width:34em}
+.cta{display:flex;flex-wrap:wrap;gap:12px;justify-content:center}
+
+/* headings */
+.sec-h{margin-bottom:32px;max-width:36em}
+.sec-h h2{font-size:clamp(1.8rem,5vw,2.6rem);color:var(--green)}
+.sec-h p{color:var(--muted);margin-top:8px}
+
+/* pricing */
+.grid{display:grid;gap:18px}
+.card{position:relative;background:#fff;border-radius:var(--r);padding:26px;box-shadow:var(--shadow);border:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.card.pop{border:2px solid var(--green)}
+.tag{position:absolute;top:-12px;left:22px;background:var(--green);color:#fff;font-size:.75rem;font-weight:600;padding:4px 12px;border-radius:999px}
+.card h3{font-size:1.2rem}
+.price{font:600 2.1rem 'Fraunces',serif;color:var(--green);margin-top:6px}
+.meta{color:var(--muted);margin-bottom:16px}
+.card .btn{margin-top:auto}
+
+/* steps */
+.how{background:var(--green);color:#fff;border-radius:36px;margin:0 12px}
+.how .sec-h h2{color:#fff}.how .sec-h p{color:#cfe3d6}
+.step{background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.16);border-radius:var(--r);padding:24px}
+.step b{display:grid;place-items:center;width:38px;height:38px;border-radius:50%;background:var(--cream);color:var(--green);font:700 1.05rem 'Fraunces',serif;margin-bottom:14px}
+.step h3{font-size:1.1rem;margin-bottom:4px}
+.step p{color:#cfe3d6;font-size:.95rem}
+
+/* form */
+.form-card{background:#fff;border-radius:28px;padding:24px;box-shadow:var(--shadow);border:1px solid var(--line);max-width:760px;margin:0 auto}
+.form-grid{display:grid;gap:16px}
+label{display:block;font-weight:600;font-size:.9rem;margin-bottom:6px}
+input,select,textarea{width:100%;font:inherit;color:var(--ink);background:var(--cream);border:1.5px solid var(--line);border-radius:14px;padding:13px 14px;transition:border-color .15s,background .15s}
+input:focus,select:focus,textarea:focus{border-color:var(--green);background:#fff}
+textarea{min-height:100px;resize:vertical}
+.err{color:#b3261e;font-size:.82rem;margin-top:4px}
+.note{text-align:center;color:var(--muted);font-size:.85rem;margin-top:12px}
+.ok{background:var(--green-l);color:var(--green-d);border-radius:14px;padding:14px 16px;margin-top:16px;font-weight:600}
+.pay{width:100%;margin-top:22px;padding:17px;font-size:1.05rem}
+
+/* footer */
+footer{background:var(--green-d);color:#d8e8dd;padding:48px 0 28px;margin-top:64px}
+footer .wrap{display:grid;gap:28px}
+footer .logo{color:#fff}
+footer a{color:#fff;text-decoration:none;display:block;padding:3px 0}
+footer a:hover{text-decoration:underline}
+footer h4{color:#fff;margin-bottom:8px;font-size:1rem}
+.copy{border-top:1px solid rgba(255,255,255,.14);margin-top:32px;padding-top:18px;font-size:.85rem}
+
+@media(min-width:640px){.grid.g2{grid-template-columns:repeat(2,1fr)}.form-grid.two{grid-template-columns:1fr 1fr}.span2{grid-column:span 2}.form-card{padding:38px}}
+@media(min-width:900px){
+ .phone{display:block}
+ .grid.g4{grid-template-columns:repeat(4,1fr)}
+ .how{margin:0 auto;max-width:1160px}
+ section{padding:88px 0}
+ footer .wrap{grid-template-columns:1.5fr 1fr 1fr}
+}
+@media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}.btn{transition:none}}
+`;
+
+const TIMES = ["8:00 AM", "10:00 AM", "12:00 PM", "2:00 PM", "4:00 PM"];
+const EMPTY = { name: "", phone: "", city: "", service: "", date: "", time: "", notes: "" };
+
+function App() {
+  const formRef = useRef(null);
+  const [f, setF] = useState(EMPTY);
+  const [errors, setErrors] = useState({});
+  const [msg, setMsg] = useState("");
+
+  const scrollToForm = () => formRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  const scrollTo = (id) => document.getElementById(id)?.scrollIntoView({ behavior: "smooth" });
+  const pick = (id) => { setF((p) => ({ ...p, service: id })); scrollToForm(); };
+  const set = (k) => (e) => setF((p) => ({ ...p, [k]: e.target.value }));
+
+  const validate = () => {
+    const e = {};
+    if (!f.name.trim()) e.name = "Enter your full name.";
+    if (!/^\+?[\d\s-]{10,15}$/.test(f.phone.trim())) e.phone = "Enter a valid WhatsApp number.";
+    if (!f.city) e.city = "Choose Lagos or Abuja.";
+    if (!f.service) e.service = "Choose a service.";
+    if (!f.date) e.date = "Pick a date.";
+    if (!f.time) e.time = "Pick a time.";
+    setErrors(e);
+    return !Object.keys(e).length;
+  };
+
+  const pay = () => {
+    setMsg("");
+    if (!validate()) return;
+    /* ---- PAYSTACK: connect here ----
+       e.g. with react-paystack:
+       initializePayment({ email, amount: 5000 * 100, metadata: f, onSuccess })
+       Then, onSuccess, send the booking to your backend / WhatsApp. */
+    const s = SERVICES.find((x) => x.id === f.service);
+    setMsg(`Thanks ${f.name.split(" ")[0]}! Paystack checkout opens here for the ₦5,000 deposit on your ${s.name} booking.`);
+  };
+
+  const Field = ({ k, label, children, cls = "" }) => (
+    <div className={cls}>
+      <label htmlFor={k}>{label}</label>
+      {children}
+      {errors[k] && <div className="err" role="alert">{errors[k]}</div>}
+    </div>
+  );
+
+  return (
+    <>
+      <style>{CSS}</style>
+
+      <header className="hdr">
+        <div className="wrap">
+          <a className="logo" href="#top"><i>C</i>Crestfield Cleaning</a>
+          <div className="hdr-r">
+            <a className="phone" href={`tel:${PHONE_LINK}`}>{PHONE_DISPLAY}</a>
+            <button className="btn btn-primary btn-sm" onClick={scrollToForm}>Book Now</button>
+          </div>
+        </div>
+      </header>
+
+      <main id="top">
+        <section className="hero">
+          <div className="wrap">
+            <div>
+              <h1>Life's too short to spend weekends on Cleaning</h1>
+              <p>Professional, Reliable, Trusted cleaning service in Lagos &amp; Abuja. Book in 60 seconds, pay deposit online.</p>
+              <div className="cta">
+                <button className="btn btn-primary" onClick={scrollToForm}>Book Cleaning Now</button>
+                <button className="btn btn-ghost" onClick={() => scrollTo("prices")}>See Prices</button>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section id="prices" style={{ paddingTop: 24 }}>
+          <div className="wrap">
+            <div className="sec-h">
+              <h2>Simple, fixed prices</h2>
+              <p>No surprises. Choose a package and we handle the rest.</p>
+            </div>
+            <div className="grid g2 g4">
+              {SERVICES.map((s) => (
+                <div key={s.id} className={`card ${s.popular ? "pop" : ""}`}>
+                  {s.popular && <span className="tag">Most booked</span>}
+                  <h3>{s.name}</h3>
+                  <div className="price">{s.price}</div>
+                  <div className="meta">{s.meta}</div>
+                  <button className="btn btn-ghost btn-sm" onClick={() => pick(s.id)}>Book This</button>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="how" id="how">
+          <div className="wrap">
+            <div className="sec-h">
+              <h2>How it works</h2>
+              <p>From booking to a spotless space in four easy steps.</p>
+            </div>
+            <div className="grid g2 g4">
+              {STEPS.map(([t, d], i) => (
+                <div className="step" key={t}>
+                  <b>{i + 1}</b>
+                  <h3>{t}</h3>
+                  <p>{d}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section id="book" ref={formRef}>
+          <div className="wrap">
+            <div className="sec-h" style={{ margin: "0 auto 28px", textAlign: "center" }}>
+              <h2>Book your cleaning</h2>
+              <p>Fill in the details below. A ₦5,000 deposit secures your slot.</p>
+            </div>
+            <div className="form-card">
+              <div className="form-grid two">
+                <Field k="name" label="Full name" cls="span2">
+                  <input id="name" value={f.name} onChange={set("name")} placeholder="e.g. Adaeze Okafor" autoComplete="name" />
+                </Field>
+                <Field k="phone" label="Phone (WhatsApp)">
+                  <input id="phone" type="tel" value={f.phone} onChange={set("phone")} placeholder="+234 ..." autoComplete="tel" />
+                </Field>
+                <Field k="city" label="Address">
+                  <select id="city" value={f.city} onChange={set("city")}>
+                    <option value="">Select city</option>
+                    <option>Lagos</option>
+                    <option>Abuja</option>
+                  </select>
+                </Field>
+                <Field k="service" label="Service type" cls="span2">
+                  <select id="service" value={f.service} onChange={set("service")}>
+                    <option value="">Select a service</option>
+                    {SERVICES.map((s) => <option key={s.id} value={s.id}>{s.name} — {s.price}</option>)}
+                  </select>
+                </Field>
+                <Field k="date" label="Date">
+                  <input id="date" type="date" value={f.date} min={new Date().toISOString().split("T")[0]} onChange={set("date")} />
+                </Field>
+                <Field k="time" label="Time">
+                  <select id="time" value={f.time} onChange={set("time")}>
+                    <option value="">Select time</option>
+                    {TIMES.map((t) => <option key={t}>{t}</option>)}
+                  </select>
+                </Field>
+                <Field k="notes" label="Special instructions" cls="span2">
+                  <textarea id="notes" value={f.notes} onChange={set("notes")} placeholder="Street address, gate codes, areas to focus on..." />
+                </Field>
+              </div>
+              <button className="btn btn-primary pay" onClick={pay}>Pay 5k Deposit</button>
+              {msg && <div className="ok" role="status">{msg}</div>}
+              <p className="note">Secure payment powered by Paystack. We confirm on WhatsApp.</p>
+            </div>
+          </div>
+        </section>
+      </main>
+
+      <footer>
+        <div className="wrap">
+          <div>
+            <a className="logo" href="#top"><i>C</i>Crestfield Cleaning</a>
+            <p style={{ marginTop: 10 }}>Crestfield Cleaning Service, Lagos &amp; Abuja.<br />Professional, reliable, trusted.</p>
+          </div>
+          <div>
+            <h4>Contact</h4>
+            <a href={`https://wa.me/${WHATSAPP}`} target="_blank" rel="noreferrer">WhatsApp: {PHONE_DISPLAY}</a>
+            <a href={`mailto:${EMAIL}`}>{EMAIL}</a>
+          </div>
+          <div>
+            <h4>Follow</h4>
+            <a href={`https://instagram.com/${INSTAGRAM}`} target="_blank" rel="noreferrer">Instagram @{INSTAGRAM}</a>
+          </div>
+        </div>
+        <div className="wrap copy">© {new Date().getFullYear()} Crestfield Cleaning Service. All rights reserved.</div>
+      </footer>
+    </>
+  );
+}
+
+ReactDOM.createRoot(document.getElementById("root")).render(<App />);
+</script>
+</body>
+</html>
